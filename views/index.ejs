@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="./style.css" />
+		<title>Document</title>
+	</head>
+	<body>
+		<div class="limiter">
+			<div class="container">
+				<div class="wrap">
+					<form action="https://payments.ipayafrica.com/v3/ke" method="POST" class="form">
+						<h1 class="page-heading">Proceed to checkout</h1>
+
+						<div class="content">
+							<div class="form-group">
+								<input type="hidden" name="live" value="<%=parameters.live%>" />
+								<input type="hidden" name="oid" value="<%=parameters.oid%>" />
+								<input type="hidden" name="ttl" value="<%=parameters.ttl%>" />
+							</div>
+							<div class="form-group">
+								<label for="Phonenumber"></label>
+								<input class="form-control" name="phonenumber" type="number" required placeholder="Phonenumber" />
+							</div>
+							<div class="form-group">
+								<label for="email"></label>
+								<input class="form-control" name="email" type="email" placeholder="Email" required />
+							</div>
+							<button class="btn btn-primary btn-block">Complete Payment</button>
+							<input type="hidden" name="vid" value="<%=parameters.vid%>" />
+							<input type="hidden" name="curr" value="<%=parameters.curr%>" />
+							<input type="hidden" name="cbk" value="<%=parameters.cbk%>" />
+							<input type="hidden" id="hshkey" name="hsh" value="<%=hsh%>" />
+							<input type="hidden" name="crl" value="<%=parameters.crl%>" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
