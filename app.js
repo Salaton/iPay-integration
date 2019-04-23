@@ -2,6 +2,7 @@ var express = require("express"),
 	bodyParser = require("body-parser"),
 	ejs = require("ejs"),
 	CryptoJS = require("crypto-js"),
+	crypto = require("crypto"),
 	request = require("request");
 var app = express();
 
@@ -10,14 +11,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //generate random order id
-var oid = Math.floor(Math.random() * 100);
+// var oid = Math.floor(Math.random() * 100);
+
 //parameters
 var parameters = {
 	live: 0,
-	oid: oid,
-	ttl: 10000,
-	tel: "",
-	eml: "",
+	oid: 50,
+	ttl: 1500,
+	tel: "254719158559",
+	eml: "sala@sala.com",
 	vid: "demo",
 	curr: "KES",
 	cbk: "http://localhost:3000/",
@@ -25,22 +27,49 @@ var parameters = {
 };
 
 //hashkey generation function
-var hash = dict => {
-	var str = "";
-	for (const key in dict) {
-		if (dict.hasOwnProperty(key)) {
-			str += dict[key];
-		}
-	}
-	return CryptoJS.HmacSHA1(str, "demoCHANGED");
-};
-//our get route to the home page..
-app.get("/", (req, res) => {
-	res.render("index");
-});
 
-app.post("/", (req, res) => {
-	res.render("index");
+var text = "0501500254719158559sala@sala.comdemoKESlocalhost:3000",
+	key = "demoCHANGED",
+	hash;
+
+hash = crypto
+	.createHmac("sha1", key)
+	.update(text)
+	.digest("hex");
+console.log(hash);
+
+app.get("/", (req, res) => {
+	res.render("index", {
+		live: parameters.live,
+		oid: parameters.oid,
+		ttl: parameters.ttl,
+		tel: parameters.tel,
+		eml: parameters.eml,
+		vid: parameters.vid,
+		curr: parameters.curr,
+		cbk: parameters.cbk,
+		crl: parameters.crl,
+		hsh: hash
+	});
+});
+app.get("/complete", (req, res) => {
+	res.render("complete", {
+		oid: parameters.oid
+	});
+});
+app.post("https://payments.ipayafrica.com/v3/ke", (req, res) => {
+	res.send({
+		live: req.body.live,
+		oid: req.body.oid,
+		ttl: req.body.ttl,
+		tel: req.body.tel,
+		eml: req.body.eml,
+		vid: req.body.vid,
+		curr: req.body.curr,
+		cbk: req.body.cbk,
+		crl: req.body.crl,
+		hash: req.body.hsh
+	});
 });
 app.listen(process.env.PORT || 3000, process.env.IP || "localhost", () => {
 	console.log("Server listening....");
