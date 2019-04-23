@@ -1,34 +1,45 @@
 var express = require("express"),
 	bodyParser = require("body-parser"),
 	ejs = require("ejs"),
-	CryptoJS = require("crypto-js"),
-	crypto = require("crypto"),
-	request = require("request");
+	fs = require("fs"),
+	path = require("path"),
+	morgan = require("morgan"),
+	rfs = require("rotating-file-stream"),
+	crypto = require("crypto");
 var app = express();
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+// setup the logger
+app.use(morgan("combined", { stream: accessLogStream }));
 
-//generate random order id
-// var oid = Math.floor(Math.random() * 100);
+//log file rotation
+var logDirectory = path.join(__dirname, "log");
+// ensure log directory exists
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+// create a rotating write stream
+var accessLogStream = rfs("access.log", {
+	interval: "1d", // rotate daily
+	path: logDirectory
+});
 
 //parameters
 var parameters = {
 	live: 0,
 	oid: 50,
-	ttl: 1500,
+	ttl: 100000,
 	tel: "254719158559",
 	eml: "sala@sala.com",
 	vid: "demo",
 	curr: "KES",
-	cbk: "http://localhost:3000/",
-	crl: "0"
+	cbk: "http://localhost:3000/complete",
+	crl: 0
 };
 
 //hashkey generation function
 
-var text = "0501500254719158559sala@sala.comdemoKESlocalhost:3000",
+var text = "050100000254719158559sala@sala.comdemoKEShttp://localhost:3000/complete0",
 	key = "demoCHANGED",
 	hash;
 
@@ -57,6 +68,7 @@ app.get("/complete", (req, res) => {
 		oid: parameters.oid
 	});
 });
+
 app.post("https://payments.ipayafrica.com/v3/ke", (req, res) => {
 	res.send({
 		live: req.body.live,
@@ -67,8 +79,7 @@ app.post("https://payments.ipayafrica.com/v3/ke", (req, res) => {
 		vid: req.body.vid,
 		curr: req.body.curr,
 		cbk: req.body.cbk,
-		crl: req.body.crl,
-		hash: req.body.hsh
+		crl: req.body.crl
 	});
 });
 app.listen(process.env.PORT || 3000, process.env.IP || "localhost", () => {
