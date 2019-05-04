@@ -23,8 +23,11 @@ This will install the needed node packages
 ## Running the tests
 
 To run the tests for this system;
-Run the index.ejs file on your localhost
-
+Run the ```app.js``` file on your terminal
+```
+nodemon app.js
+```
+After this, using your browser, access localhost on port 3000;
 ```
 http://localhost:3000/
 ```
@@ -32,8 +35,7 @@ Since all parameters are predefined in the app.js file, you only need to "comple
 
 ### Running again
 
-To run the test again, use different parameters, e.g you can change the ```ttl``` value on the ```var parameters``` and at the ```var text``` to generate a new hash. After this, you can proceed with the payment process.
-
+To run the test again, the ```oid``` value will be randomy generated and start the process by clicking on the ```complete payment``` button again. 
 ## Built With
 
 * [Express](http://expressjs.com/) - The web framework used
