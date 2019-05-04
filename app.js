@@ -24,10 +24,12 @@ var accessLogStream = rfs("access.log", {
 	path: logDirectory
 });
 
+var oid = Math.floor(Math.random() * 100);
+console.log("The order ID is", oid);
 //parameters
 var parameters = {
 	live: 0,
-	oid: 50,
+	oid: oid,
 	ttl: 100000,
 	tel: "254719158559",
 	eml: "sala@sala.com",
@@ -38,10 +40,12 @@ var parameters = {
 };
 
 //hashkey generation function
-
-var text = "050100000254719158559sala@sala.comdemoKEShttp://localhost:3000/complete0",
+var text = `${parameters.live}${oid}${parameters.ttl}${parameters.tel}${parameters.eml}${parameters.vid}${parameters.curr}${parameters.cbk}${parameters.crl}`,
 	key = "demoCHANGED",
 	hash;
+// var text = "050100000254719158559sala@sala.comdemoKEShttp://localhost:3000/complete0",
+// 	key = "demoCHANGED",
+// 	hash;
 
 hash = crypto
 	.createHmac("sha1", key)
