@@ -1,4 +1,4 @@
-var express = require("express"),
+const express = require("express"),
 	bodyParser = require("body-parser"),
 	ejs = require("ejs"),
 	fs = require("fs"),
@@ -6,7 +6,7 @@ var express = require("express"),
 	morgan = require("morgan"),
 	rfs = require("rotating-file-stream"),
 	crypto = require("crypto");
-var app = express();
+const app = express();
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,10 +24,10 @@ var accessLogStream = rfs("access.log", {
 	path: logDirectory
 });
 
-var oid = Math.floor(Math.random() * 100);
+const oid = Math.floor(Math.random() * 100);
 console.log("The order ID is", oid);
 //parameters
-var parameters = {
+const parameters = {
 	live: 0,
 	oid: oid,
 	ttl: 100000,
