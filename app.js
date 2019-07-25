@@ -5,7 +5,10 @@ const express = require("express"),
 	path = require("path"),
 	morgan = require("morgan"),
 	rfs = require("rotating-file-stream"),
-	crypto = require("crypto");
+	crypto = require("crypto"),
+	nexe = require('nexe'),
+	Service = require('node-windows').Service;
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -24,6 +27,43 @@ var accessLogStream = rfs("access.log", {
 	path: logDirectory
 });
 
+//create the .exe file
+nexe.compile({
+    flags: true,
+    input: "app.js",
+    output: "ipayafrica",
+    nodeVersion: "v10.16.0",
+    nodeTempDir: "nexe_node",
+    framework: "node",
+    resourceFiles: []
+  },
+  (error) => {
+    if (error) {
+      return console.error(error.message)
+    }
+  }
+);
+
+
+//running the code on windows as a service
+// Create a new service object
+var svc = new Service({
+  name:'iPay Test',
+  description: 'This is a simple NodeJS implementation that allows a user to successfully integrate with the iPay gateway.',
+  script: 'C:\Users\ipayafrica\Documents\NodeSample\iPay-integration\app.js',
+  nodeOptions: [
+    '--harmony',
+    '--max_old_space_size=4096'
+  ]
+});
+
+// Listen for the "install" event, which indicates the
+// process is available as a service.
+svc.on('install',function(){
+  svc.start();
+});
+
+svc.install();
 const oid = Math.floor(Math.random() * 100);
 console.log("The order ID is", oid);
 //parameters
@@ -35,7 +75,7 @@ const parameters = {
 	eml: "sala@sala.com",
 	vid: "demo",
 	curr: "KES",
-	cbk: "http://localhost:3000/complete",
+	cbk: "http://localhost:8080/complete",
 	crl: 0
 };
 
@@ -86,6 +126,6 @@ app.post("https://payments.ipayafrica.com/v3/ke", (req, res) => {
 		crl: req.body.crl
 	});
 });
-app.listen(process.env.PORT || 3000, process.env.IP || "localhost", () => {
-	console.log("Server listening....");
+app.listen(process.env.PORT || 8080, process.env.IP || "localhost", () => {
+	console.log("Server listening on port 8080....");
 });
